@@ -1,2 +1,2 @@
-# prawn game
+# prawngame
 code to build a game to know my friends better.
