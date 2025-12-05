@@ -276,19 +276,20 @@ const App: React.FC = () => {
             </motion.div>
           )}
 
-          {/* GAME VIEW - Split Layout for Desktop, Stack for Mobile */}
+          {/* GAME VIEW - 2 Column Grid for Desktop, Stack for Mobile */}
           {view === 'game' && (
             <motion.div
               key="game"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex-1 flex flex-col md:flex-row w-full h-full max-w-7xl mx-auto p-4 md:p-8 gap-4 md:gap-12"
+              // Use Grid for Desktop to ensure equal columns (50% / 50%)
+              className="flex-1 flex flex-col md:grid md:grid-cols-2 w-full h-full max-w-7xl mx-auto p-4 md:p-8 gap-4 md:gap-0"
             >
               
-              {/* --- LEFT / CENTER AREA: The Card --- */}
-              {/* On mobile: takes available vertical space. On Desktop: takes available horizontal space */}
-              <div className="flex-1 flex items-center justify-center relative min-h-0 min-w-0">
+              {/* --- LEFT / COLUMN 1: The Card --- */}
+              {/* Flex centering for mobile. Grid alignment for Desktop. */}
+              <div className="flex-1 md:h-full flex items-center justify-center relative min-h-0 min-w-0 md:p-8">
                  <GameCard 
                   card={currentCard} 
                   isFlipped={isFlipped} 
@@ -297,83 +298,87 @@ const App: React.FC = () => {
                 />
               </div>
 
-              {/* --- RIGHT / BOTTOM AREA: Controls --- */}
-              {/* On mobile: fixed at bottom. On Desktop: fixed sidebar width */}
-              <div className="shrink-0 w-full md:w-80 flex flex-col justify-end md:justify-center gap-4 md:gap-8 z-10 pb-safe">
+              {/* --- RIGHT / COLUMN 2: Controls --- */}
+              {/* Flex-col for mobile. Centered block for Desktop. */}
+              <div className="shrink-0 w-full md:h-full flex flex-col justify-end md:justify-center md:items-center z-10 pb-safe">
                 
-                {/* Navigation Controls (Arrows) - Top on mobile, Middle on Desktop (via order) */}
-                <div className="order-1 md:order-2 flex items-center justify-between gap-4">
-                  <Button 
-                    variant="icon" 
-                    onClick={prevCard} 
-                    disabled={history.length === 0}
-                    className="h-14 w-14 md:h-16 md:w-16 border border-current opacity-80 hover:opacity-100 disabled:opacity-20 flex items-center justify-center"
-                  >
-                    <ArrowLeft size={24} />
-                  </Button>
+                {/* Controls Container: Constrained width on desktop to prevent stretching */}
+                <div className="w-full md:max-w-sm flex flex-col gap-4 md:gap-8">
                   
-                  <div className="text-center">
-                    <span className="text-[10px] md:text-xs font-bold tracking-widest uppercase opacity-40">
-                      {deck.length} Left
-                    </span>
-                  </div>
-
-                  <Button 
-                    variant="icon" 
-                    onClick={nextCard}
-                    className="h-14 w-14 md:h-16 md:w-16 bg-current text-current inverse-text hover:scale-105 active:scale-95 transition-transform flex items-center justify-center shadow-lg"
-                    style={{ 
-                      backgroundColor: theme === 'classic' ? '#C31C23' : '#FFFFFF',
-                      color: theme === 'classic' ? '#FFFFFF' : '#000000'
-                    }}
-                  >
-                    <ArrowRight size={24} />
-                  </Button>
-                </div>
-
-                {/* Turn Indicator - Bottom on mobile, Top on Desktop (via order) */}
-                <div className={`order-2 md:order-1 flex flex-row md:flex-col justify-between md:justify-center items-center gap-2 md:gap-4 p-4 rounded-xl backdrop-blur-sm transition-colors
-                   ${theme === 'classic' ? 'bg-white/50 md:bg-gray-50' : 'bg-white/5 md:bg-white/5'}`}>
-                  <div className="flex flex-col md:text-center">
-                    <span className="text-[10px] md:text-xs font-bold tracking-widest uppercase opacity-50 mb-1">Current Turn</span>
-                    <span className="text-xl md:text-3xl font-bold truncate max-w-[150px] md:max-w-full">{currentPlayerName}</span>
-                  </div>
-                  <Button 
-                    variant="secondary" 
-                    onClick={shufflePlayers}
-                    title="Shuffle Player Order"
-                    className="flex items-center gap-2 text-xs md:text-sm whitespace-nowrap"
-                  >
-                    <Dices size={16} />
-                    <span>Shuffle Order</span>
-                  </Button>
-                </div>
-
-                {/* Deck Options Toggle - Always last */}
-                <div className={`order-3 p-3 md:p-4 rounded-xl flex items-center justify-between transition-colors
-                  ${theme === 'classic' ? 'bg-gray-100' : 'bg-wnrs-darkgrey'}`}>
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-full ${wildcardsEnabled ? 'bg-yellow-400 text-black' : 'bg-gray-400 text-white'}`}>
-                      <Sparkles size={16} />
+                  {/* Navigation Controls (Arrows) */}
+                  <div className="order-1 flex items-center justify-between gap-4">
+                    <Button 
+                      variant="icon" 
+                      onClick={prevCard} 
+                      disabled={history.length === 0}
+                      className="h-14 w-14 md:h-16 md:w-16 border border-current opacity-80 hover:opacity-100 disabled:opacity-20 flex items-center justify-center"
+                    >
+                      <ArrowLeft size={24} />
+                    </Button>
+                    
+                    <div className="text-center">
+                      <span className="text-[10px] md:text-xs font-bold tracking-widest uppercase opacity-40">
+                        {deck.length} Left
+                      </span>
                     </div>
-                    <span className="font-medium text-sm">Wildcards</span>
+
+                    <Button 
+                      variant="icon" 
+                      onClick={nextCard}
+                      className="h-14 w-14 md:h-16 md:w-16 bg-current text-current inverse-text hover:scale-105 active:scale-95 transition-transform flex items-center justify-center shadow-lg"
+                      style={{ 
+                        backgroundColor: theme === 'classic' ? '#C31C23' : '#FFFFFF',
+                        color: theme === 'classic' ? '#FFFFFF' : '#000000'
+                      }}
+                    >
+                      <ArrowRight size={24} />
+                    </Button>
+                  </div>
+
+                  {/* Turn Indicator */}
+                  <div className={`order-2 flex flex-row md:flex-col justify-between md:justify-center items-center gap-2 md:gap-4 p-4 rounded-xl backdrop-blur-sm transition-colors
+                     ${theme === 'classic' ? 'bg-white/50 md:bg-gray-50' : 'bg-white/5 md:bg-white/5'}`}>
+                    <div className="flex flex-col md:text-center">
+                      <span className="text-[10px] md:text-xs font-bold tracking-widest uppercase opacity-50 mb-1">Current Turn</span>
+                      <span className="text-xl md:text-3xl font-bold truncate max-w-[150px] md:max-w-full">{currentPlayerName}</span>
+                    </div>
+                    <Button 
+                      variant="secondary" 
+                      onClick={shufflePlayers}
+                      title="Shuffle Player Order"
+                      className="flex items-center gap-2 text-xs md:text-sm whitespace-nowrap"
+                    >
+                      <Dices size={16} />
+                      <span>Shuffle Order</span>
+                    </Button>
+                  </div>
+
+                  {/* Deck Options Toggle */}
+                  <div className={`order-3 p-3 md:p-4 rounded-xl flex items-center justify-between transition-colors
+                    ${theme === 'classic' ? 'bg-gray-100' : 'bg-wnrs-darkgrey'}`}>
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-full ${wildcardsEnabled ? 'bg-yellow-400 text-black' : 'bg-gray-400 text-white'}`}>
+                        <Sparkles size={16} />
+                      </div>
+                      <span className="font-medium text-sm">Wildcards</span>
+                    </div>
+                    
+                    <button
+                      onClick={toggleWildcards}
+                      className={`w-12 h-7 rounded-full transition-colors relative focus:outline-none focus:ring-2 focus:ring-offset-2
+                        ${wildcardsEnabled 
+                          ? (theme === 'classic' ? 'bg-wnrs-red' : 'bg-white') 
+                          : 'bg-gray-400'}`}
+                    >
+                      <motion.div
+                        className="absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow-sm"
+                        animate={{ x: wildcardsEnabled ? 20 : 0 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                        style={{ backgroundColor: wildcardsEnabled && theme === 'midnight' ? 'black' : 'white' }}
+                      />
+                    </button>
                   </div>
                   
-                  {/* Custom Toggle Switch */}
-                  <button
-                    onClick={toggleWildcards}
-                    className={`w-12 h-7 rounded-full transition-colors relative focus:outline-none focus:ring-2 focus:ring-offset-2
-                      ${wildcardsEnabled 
-                        ? (theme === 'classic' ? 'bg-wnrs-red' : 'bg-white') 
-                        : 'bg-gray-400'}`}
-                  >
-                    <motion.div
-                      className="absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow-sm"
-                      animate={{ x: wildcardsEnabled ? 20 : 0 }}
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                      style={{ backgroundColor: wildcardsEnabled && theme === 'midnight' ? 'black' : 'white' }}
-                    />
-                  </button>
                 </div>
 
               </div>
