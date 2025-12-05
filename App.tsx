@@ -8,7 +8,6 @@ import {
   Dices, 
   X, 
   Settings, 
-  Users,
   Play,
   Sparkles
 } from 'lucide-react';
@@ -121,8 +120,6 @@ const App: React.FC = () => {
     }
 
     if (deck.length === 0) {
-      // Logic for end of deck - maybe reshuffle history? 
-      // For now, just keep current null or reset
       alert("End of deck! Reshuffling...");
       initializeDeck();
       return;
@@ -145,7 +142,7 @@ const App: React.FC = () => {
     if (history.length === 0) return;
 
     const newHistory = [...history];
-    const previous = newHistory.pop() || null; // The card we are going back to
+    const previous = newHistory.pop() || null; 
 
     // Put current card back on top of deck
     if (currentCard) {
@@ -164,10 +161,6 @@ const App: React.FC = () => {
 
   const toggleWildcards = () => {
     setWildcardsEnabled(prev => !prev);
-    // Requirement: Toggling immediately reshuffles
-    // We defer the actual logic to useEffect or call it directly. 
-    // Since state update is async, we can't call initializeDeck immediately with new state.
-    // However, initializeDeck depends on wildcardsEnabled. 
   };
 
   // React to wildcard toggle while in game
@@ -184,16 +177,17 @@ const App: React.FC = () => {
   const currentPlayerName = players.length > 0 ? players[activePlayerIndex] : "Player";
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 flex flex-col ${theme === 'classic' ? 'text-black' : 'text-white'}`}>
+    <div className={`h-screen w-screen overflow-hidden flex flex-col transition-colors duration-500 ${theme === 'classic' ? 'text-black' : 'text-white'}`}>
       
-      {/* Header */}
-      <header className="p-4 flex justify-between items-center z-10">
-        <div className="flex items-center gap-2">
-          <span className={`font-bold text-xl tracking-tighter ${theme === 'classic' ? 'text-wnrs-red' : 'text-white'}`}>
-            PRAWN GAME
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
+      {/* Header - Fixed Height */}
+      <header className="h-16 shrink-0 relative flex items-center justify-center z-20 px-4">
+        {/* Title Centered via Flex + Absolute positioning of controls */}
+        <span className={`font-bold text-xl tracking-tighter text-center ${theme === 'classic' ? 'text-wnrs-red' : 'text-white'}`}>
+          PRAWN GAME
+        </span>
+
+        {/* Right Controls - Absolute to allow perfect centering of title */}
+        <div className="absolute right-4 flex items-center gap-2">
           <Button variant="icon" onClick={() => setTheme(prev => prev === 'classic' ? 'midnight' : 'classic')}>
             {theme === 'classic' ? <Moon size={20} /> : <Sun size={20} />}
           </Button>
@@ -205,25 +199,25 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col max-w-md mx-auto w-full p-4 relative overflow-hidden">
+      {/* Main Content Area - Fills remaining height */}
+      <main className="flex-1 w-full h-full relative overflow-hidden flex flex-col">
         <AnimatePresence mode="wait">
           
           {/* SETUP VIEW */}
           {view === 'setup' && (
             <motion.div
               key="setup"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="flex-1 flex flex-col justify-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex-1 flex flex-col w-full max-w-md mx-auto p-6"
             >
-              <div className="mb-8 text-center">
+              <div className="shrink-0 mb-8 text-center mt-auto">
                 <h2 className="text-3xl font-bold mb-2">Who's playing?</h2>
                 <p className="opacity-60">Add everyone who's playing on this device.</p>
               </div>
 
-              <div className="flex gap-2 mb-6">
+              <div className="shrink-0 flex gap-2 mb-6">
                 <input
                   type="text"
                   value={inputValue}
@@ -240,7 +234,8 @@ const App: React.FC = () => {
                 </Button>
               </div>
 
-              <div className="flex-1 overflow-y-auto mb-6 space-y-2 max-h-[40vh]">
+              {/* Scrollable Player List - Takes remaining space */}
+              <div className="flex-1 overflow-y-auto mb-6 space-y-2 pr-2">
                 <AnimatePresence>
                   {players.map((p, i) => (
                     <motion.div
@@ -267,7 +262,7 @@ const App: React.FC = () => {
                 </AnimatePresence>
               </div>
 
-              <div className="mt-auto">
+              <div className="shrink-0 mt-auto pb-4">
                 <Button fullWidth onClick={startGame} disabled={players.length === 0}>
                   <span className="flex items-center justify-center gap-2">
                     Start Game <Play size={18} fill="currentColor" />
@@ -277,35 +272,20 @@ const App: React.FC = () => {
             </motion.div>
           )}
 
-          {/* GAME VIEW */}
+          {/* GAME VIEW - Split Layout for Desktop, Stack for Mobile */}
           {view === 'game' && (
             <motion.div
               key="game"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.05 }}
-              className="flex-1 flex flex-col"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex-1 flex flex-col md:flex-row w-full h-full max-w-7xl mx-auto p-4 md:p-8 gap-4 md:gap-12"
             >
-              {/* Turn Indicator */}
-              <div className="flex justify-between items-center mb-6 px-2">
-                <div className="flex flex-col">
-                  <span className="text-xs font-bold tracking-widest uppercase opacity-50 mb-1">Current Turn</span>
-                  <span className="text-2xl font-bold truncate max-w-[200px]">{currentPlayerName}</span>
-                </div>
-                <Button 
-                  variant="secondary" 
-                  onClick={shufflePlayers}
-                  title="Shuffle Player Order"
-                  className="flex items-center gap-2 text-sm"
-                >
-                  <Dices size={18} />
-                  <span>Shuffle</span>
-                </Button>
-              </div>
-
-              {/* Card Area */}
-              <div className="flex-1 flex items-center justify-center mb-8">
-                <GameCard 
+              
+              {/* --- LEFT / CENTER AREA: The Card --- */}
+              {/* On mobile: takes available vertical space. On Desktop: takes available horizontal space */}
+              <div className="flex-1 flex items-center justify-center relative min-h-0 min-w-0">
+                 <GameCard 
                   card={currentCard} 
                   isFlipped={isFlipped} 
                   onFlip={() => setIsFlipped(prev => !prev)}
@@ -313,22 +293,41 @@ const App: React.FC = () => {
                 />
               </div>
 
-              {/* Controls Footer */}
-              <div className="mt-auto space-y-6">
+              {/* --- RIGHT / BOTTOM AREA: Controls --- */}
+              {/* On mobile: fixed at bottom. On Desktop: fixed sidebar width */}
+              <div className="shrink-0 w-full md:w-80 flex flex-col justify-end md:justify-center gap-4 md:gap-8 z-10 pb-safe">
                 
-                {/* Navigation */}
+                {/* Turn Indicator */}
+                <div className="flex flex-row md:flex-col justify-between md:justify-center items-center gap-2 md:gap-4 p-4 rounded-xl backdrop-blur-sm
+                   ${theme === 'classic' ? 'bg-white/50 md:bg-gray-50' : 'bg-white/5 md:bg-white/5'}">
+                  <div className="flex flex-col md:text-center">
+                    <span className="text-[10px] md:text-xs font-bold tracking-widest uppercase opacity-50 mb-1">Current Turn</span>
+                    <span className="text-xl md:text-3xl font-bold truncate max-w-[150px] md:max-w-full">{currentPlayerName}</span>
+                  </div>
+                  <Button 
+                    variant="secondary" 
+                    onClick={shufflePlayers}
+                    title="Shuffle Player Order"
+                    className="flex items-center gap-2 text-xs md:text-sm whitespace-nowrap"
+                  >
+                    <Dices size={16} />
+                    <span>Shuffle Order</span>
+                  </Button>
+                </div>
+
+                {/* Navigation Controls */}
                 <div className="flex items-center justify-between gap-4">
                   <Button 
                     variant="icon" 
                     onClick={prevCard} 
                     disabled={history.length === 0}
-                    className="h-14 w-14 border border-current opacity-80 hover:opacity-100 disabled:opacity-20"
+                    className="h-14 w-14 md:h-16 md:w-16 border border-current opacity-80 hover:opacity-100 disabled:opacity-20 flex items-center justify-center"
                   >
                     <ArrowLeft size={24} />
                   </Button>
                   
                   <div className="text-center">
-                    <span className="text-xs font-bold tracking-widest uppercase opacity-40">
+                    <span className="text-[10px] md:text-xs font-bold tracking-widest uppercase opacity-40">
                       {deck.length} Left
                     </span>
                   </div>
@@ -336,7 +335,7 @@ const App: React.FC = () => {
                   <Button 
                     variant="icon" 
                     onClick={nextCard}
-                    className="h-14 w-14 bg-current text-current inverse-text hover:scale-105 active:scale-95 transition-transform"
+                    className="h-14 w-14 md:h-16 md:w-16 bg-current text-current inverse-text hover:scale-105 active:scale-95 transition-transform flex items-center justify-center shadow-lg"
                     style={{ 
                       backgroundColor: theme === 'classic' ? '#C31C23' : '#FFFFFF',
                       color: theme === 'classic' ? '#FFFFFF' : '#000000'
@@ -346,8 +345,8 @@ const App: React.FC = () => {
                   </Button>
                 </div>
 
-                {/* Deck Options */}
-                <div className={`p-4 rounded-xl flex items-center justify-between transition-colors
+                {/* Deck Options Toggle */}
+                <div className={`p-3 md:p-4 rounded-xl flex items-center justify-between transition-colors
                   ${theme === 'classic' ? 'bg-gray-100' : 'bg-wnrs-darkgrey'}`}>
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-full ${wildcardsEnabled ? 'bg-yellow-400 text-black' : 'bg-gray-400 text-white'}`}>

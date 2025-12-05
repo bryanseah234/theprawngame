@@ -30,52 +30,50 @@ export const GameCard: React.FC<GameCardProps> = ({ card, isFlipped, onFlip, the
 
   if (!card) {
     return (
-      <div className={`w-full h-96 rounded-2xl flex items-center justify-center ${theme === 'classic' ? 'bg-gray-100' : 'bg-wnrs-darkgrey'} opacity-50`}>
+      <div className={`w-full h-full aspect-[3/4] max-h-[600px] rounded-2xl flex items-center justify-center ${theme === 'classic' ? 'bg-gray-100' : 'bg-wnrs-darkgrey'} opacity-50`}>
         <span className="text-sm font-medium">End of Deck</span>
       </div>
     );
   }
 
   return (
-    <div className="relative w-full h-[500px] perspective-1000 cursor-pointer group" onClick={onFlip}>
+    <div className="relative w-full h-full flex items-center justify-center perspective-1000 cursor-pointer group p-4" onClick={onFlip}>
       <motion.div
-        className="w-full h-full relative transform-style-3d shadow-2xl rounded-2xl"
-        initial={false}
-        animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{ duration: 0.6, type: "spring", stiffness: 260, damping: 20 }}
+        // Key triggers re-render animation when card changes
+        key={card.id}
+        // Use aspect ratio to maintain card shape, scale to fit container (h-full/w-auto or w-full/h-auto)
+        className="w-auto h-full aspect-[3/4] max-h-full max-w-full relative transform-style-3d shadow-2xl rounded-2xl"
+        // Start slightly smaller and transparent. Match rotation to current state to avoid unwanted flip on load.
+        initial={{ scale: 0.95, opacity: 0, rotateY: isFlipped ? 180 : 0 }}
+        animate={{ scale: 1, opacity: 1, rotateY: isFlipped ? 180 : 0 }}
+        transition={{ duration: 0.4, type: "spring", stiffness: 260, damping: 20 }}
       >
-        {/* Front of Card (Question) - Shows when FLIPPED (180deg) conceptually, but in code the 'front' face is usually 0deg. 
-            However, user request says: "Clicking triggers flip... Front shows Question". 
-            So 0deg = Back (Logo), 180deg = Front (Question). 
-            Let's implement: 0deg = Logo (Back of physical card), 180deg = Text (Front of physical card).
-        */}
-
         {/* The 'Back' (Logo side) - Initial State */}
         <div 
-          className={`absolute w-full h-full rounded-2xl backface-hidden flex flex-col items-center justify-center ${backBg} ${backText}`}
+          className={`absolute inset-0 rounded-2xl backface-hidden flex flex-col items-center justify-center ${backBg} ${backText}`}
         >
-          <h1 className="text-6xl font-bold tracking-tighter">WNRS</h1>
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter">WNRS</h1>
           <p className="mt-4 text-xs tracking-widest uppercase opacity-80">Prawn Game Edition</p>
         </div>
 
         {/* The 'Front' (Question side) - Rotated 180 */}
         <div 
-          className={`absolute w-full h-full rounded-2xl backface-hidden rotate-y-180 flex flex-col items-center justify-center p-8 text-center ${frontBg} ${frontText}`}
+          className={`absolute inset-0 rounded-2xl backface-hidden rotate-y-180 flex flex-col items-center justify-center p-6 md:p-10 text-center ${frontBg} ${frontText}`}
         >
           {card.wildcard && (
-            <div className="absolute top-6 right-6">
-              <Sparkles className="w-6 h-6 animate-pulse" />
+            <div className="absolute top-4 right-4 md:top-6 md:right-6">
+              <Sparkles className="w-6 h-6 md:w-8 md:h-8 animate-pulse" />
             </div>
           )}
           
-          <div className="flex-1 flex items-center justify-center">
-             <h2 className="text-3xl font-bold leading-tight select-none">
+          <div className="flex-1 flex items-center justify-center w-full">
+             <h2 className="text-2xl md:text-4xl font-bold leading-tight select-none w-full break-words">
               {card.text}
             </h2>
           </div>
           
           {card.wildcard && (
-            <div className="absolute bottom-6 text-sm font-semibold uppercase tracking-widest border border-current px-3 py-1 rounded-full opacity-60">
+            <div className="absolute bottom-6 text-xs md:text-sm font-semibold uppercase tracking-widest border border-current px-3 py-1 rounded-full opacity-60">
               Wildcard
             </div>
           )}
