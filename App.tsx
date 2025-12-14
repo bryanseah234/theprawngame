@@ -27,8 +27,6 @@ const shuffleArray = <T,>(array: T[]): T[] => {
   return newArray;
 };
 
-const STORAGE_KEY = 'prawn_players_v2'; // Updated key to invalidate old cache
-
 const App: React.FC = () => {
   // --- State ---
   const [theme, setTheme] = useState<Theme>('classic');
@@ -50,19 +48,6 @@ const App: React.FC = () => {
 
   // --- Effects ---
 
-  // Initialize Logic
-  useEffect(() => {
-    // Load players from local storage
-    const savedPlayers = localStorage.getItem(STORAGE_KEY);
-    if (savedPlayers) {
-      try {
-        setPlayers(JSON.parse(savedPlayers));
-      } catch (e) {
-        console.error("Failed to parse players", e);
-      }
-    }
-  }, []);
-
   // Update Body Class for Theme
   useEffect(() => {
     if (theme === 'midnight') {
@@ -73,11 +58,6 @@ const App: React.FC = () => {
       document.body.style.backgroundColor = '#F5F5F5';
     }
   }, [theme]);
-
-  // Persist players
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(players));
-  }, [players]);
 
   // --- Game Logic ---
 

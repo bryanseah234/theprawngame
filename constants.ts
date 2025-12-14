@@ -1,6 +1,5 @@
-
 import { Question } from './types';
-import rawQuestions from 'questions.json';
+import rawQuestions from './questions.json';
 
 // Handle potential default export wrapping by bundlers
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
