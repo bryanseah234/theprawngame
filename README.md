@@ -1,4 +1,4 @@
-# Prawn Game
+# The Prawn Game
 
 A digital card game inspired by "We're Not Really Strangers", designed to deepen relationships through meaningful questions and interactive wildcards.
 
