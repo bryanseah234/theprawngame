@@ -176,24 +176,45 @@ const App: React.FC = () => {
     }
   }, [cardSets]);
 
+  // Keyboard navigation for game view
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (view !== 'game') return;
+
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextCard();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevCard();
+      } else if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        setIsFlipped(prev => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [view, nextCard, prevCard]);
+
   const hasEnabledCardSet = cardSets.some(set => set.enabled);
 
   return (
     <div className={`min-h-screen min-h-[100dvh] w-full overflow-y-auto overflow-x-hidden flex flex-col transition-colors duration-500 hide-scrollbar ${theme === 'classic' ? 'text-black bg-[#F5F5F5]' : 'text-white bg-[#0a0a0a]'}`}>
 
-      <header className="h-10 sm:h-12 shrink-0 sticky top-0 z-20 flex items-center justify-center px-4 backdrop-blur-sm bg-inherit">
-        <span className={`font-bold text-base sm:text-lg tracking-tighter text-center ${theme === 'classic' ? 'text-wnrs-red' : 'text-white'}`}>
+      <header className="h-12 sm:h-14 lg:h-16 shrink-0 sticky top-0 z-20 flex items-center justify-center px-4 sm:px-6 backdrop-blur-sm bg-inherit">
+        <span className={`font-bold text-lg sm:text-xl lg:text-2xl tracking-tighter text-center ${theme === 'classic' ? 'text-wnrs-red' : 'text-white'}`}>
           THE PRAWN GAME
         </span>
 
-        <div className="absolute right-3 flex items-center gap-1">
+        <div className="absolute right-3 sm:right-4 lg:right-6 flex items-center gap-1 sm:gap-2">
           {view === 'game' && (
-            <Button variant="icon" onClick={() => setView('splash')}>
-              <Settings size={16} className="sm:w-[18px] sm:h-[18px]" />
+            <Button variant="icon" className="p-2 sm:p-2.5 lg:p-3" onClick={() => setView('splash')}>
+              <Settings className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" />
             </Button>
           )}
-          <Button variant="icon" onClick={() => setTheme(prev => prev === 'classic' ? 'midnight' : 'classic')}>
-            {theme === 'classic' ? <Moon size={16} className="sm:w-[18px] sm:h-[18px]" /> : <Sun size={16} className="sm:w-[18px] sm:h-[18px]" />}
+          <Button variant="icon" className="p-2 sm:p-2.5 lg:p-3" onClick={() => setTheme(prev => prev === 'classic' ? 'midnight' : 'classic')}>
+            {theme === 'classic' ? <Moon className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" /> : <Sun className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" />}
           </Button>
         </div>
       </header>
@@ -227,8 +248,8 @@ const App: React.FC = () => {
                     >
                       <div className="flex items-center gap-3 sm:gap-4">
                         <div className={`p-2 sm:p-2.5 lg:p-3 rounded-full transition-colors ${cardSet.enabled
-                            ? 'bg-wnrs-red text-white'
-                            : theme === 'classic' ? 'bg-gray-300 text-gray-500' : 'bg-gray-700 text-gray-400'
+                          ? 'bg-wnrs-red text-white'
+                          : theme === 'classic' ? 'bg-gray-300 text-gray-500' : 'bg-gray-700 text-gray-400'
                           }`}>
                           {getIconForCardSet(cardSet.id)}
                         </div>
@@ -281,19 +302,19 @@ const App: React.FC = () => {
                 />
               </div>
 
-              <div className="shrink-0 w-full py-2 pb-safe">
-                <div className="flex items-center justify-center gap-4">
+              <div className="shrink-0 w-full py-3 sm:py-4 lg:py-5 pb-safe">
+                <div className="flex items-center justify-center gap-4 sm:gap-6 lg:gap-8">
                   <Button
                     variant="icon"
                     onClick={prevCard}
                     disabled={history.length === 0}
-                    className="h-10 w-10 sm:h-11 sm:w-11 border border-current opacity-80 hover:opacity-100 disabled:opacity-20 flex items-center justify-center"
+                    className="h-12 w-12 sm:h-14 sm:w-14 lg:h-16 lg:w-16 border border-current opacity-80 hover:opacity-100 disabled:opacity-20 flex items-center justify-center"
                   >
-                    <ArrowLeft size={16} className="sm:w-[18px] sm:h-[18px]" />
+                    <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" />
                   </Button>
 
-                  <div className="text-center min-w-[40px]">
-                    <span className="text-[9px] sm:text-[10px] font-bold tracking-widest uppercase opacity-40">
+                  <div className="text-center min-w-[50px] sm:min-w-[60px] lg:min-w-[70px]">
+                    <span className="text-[10px] sm:text-xs lg:text-sm font-bold tracking-widest uppercase opacity-40">
                       {deck.length} Left
                     </span>
                   </div>
@@ -301,13 +322,13 @@ const App: React.FC = () => {
                   <Button
                     variant="icon"
                     onClick={nextCard}
-                    className="h-10 w-10 sm:h-11 sm:w-11 hover:scale-105 active:scale-95 transition-transform flex items-center justify-center shadow-lg"
+                    className="h-12 w-12 sm:h-14 sm:w-14 lg:h-16 lg:w-16 hover:scale-105 active:scale-95 transition-transform flex items-center justify-center shadow-lg"
                     style={{
                       backgroundColor: theme === 'classic' ? '#C31C23' : '#FFFFFF',
                       color: theme === 'classic' ? '#FFFFFF' : '#000000'
                     }}
                   >
-                    <ArrowRight size={16} className="sm:w-[18px] sm:h-[18px]" />
+                    <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" />
                   </Button>
                 </div>
               </div>
