@@ -5,8 +5,8 @@ export interface Question {
   category?: string;
 }
 
-export type ViewState = 'splash' | 'game';
-export type Theme = 'classic' | 'midnight';
+export type ViewState = "splash" | "game";
+export type Theme = "classic" | "midnight";
 
 export interface CardSetOption {
   id: string;
