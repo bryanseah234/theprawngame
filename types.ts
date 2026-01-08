@@ -4,8 +4,8 @@ export interface Question {
   wildcard?: boolean;
 }
 
-export type ViewState = 'setup' | 'game';
-export type Theme = 'classic' | 'midnight';
+export type ViewState = "setup" | "game";
+export type Theme = "classic" | "midnight";
 
 export interface GameState {
   view: ViewState;
