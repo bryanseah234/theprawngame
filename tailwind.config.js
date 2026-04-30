@@ -1,21 +1,4 @@
 /** @type {import('tailwindcss').Config} */
-export default {
-  content: [
-    "./index.html",
-    "./**/*.{js,ts,jsx,tsx}",
-  ],
-  darkMode: 'class',
-  theme: {
-    extend: {
-      colors: {
-        wnrs: {
-          red: '#C31C23',
-          offwhite: '#F5F5F5',
-          black: '#0a0a0a',
-          darkgrey: '#1a1a1a',
-        }
-      }
-    },
-  },
-  plugins: [],
-}
+// Tailwind v4: this file is ignored. Theme config lives in index.css (@theme block).
+// darkMode and custom colors are configured there via @theme / @custom-variant.
+export default {};

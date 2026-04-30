@@ -23,6 +23,12 @@ dist-ssr
 *.sln
 *.sw?
 
+# Screenshots / Playwright artifacts (never commit)
+*.png
+*.jpg
+*.jpeg
+.playwright-mcp/
+
 # AI / editor dot directories (managed via sourcerepo)
 .*
 !.github/

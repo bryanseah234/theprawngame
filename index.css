@@ -1,6 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* Tailwind v4: custom colors go here, not in tailwind.config.js */
+@theme {
+  --color-wnrs-red: #C31C23;
+  --color-wnrs-offwhite: #F5F5F5;
+  --color-wnrs-black: #0a0a0a;
+  --color-wnrs-darkgrey: #1a1a1a;
+}
+
+/* Class-based dark mode (.dark on <html>) */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
   html,
