@@ -28,3 +28,7 @@ npm run dev
 # Build for production
 npm run build
 ```
+
+## License
+
+Apache-2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
